@@ -1,7 +1,11 @@
 ﻿using Microsoft.Data.Sqlite;
+using LabManager.Database;
+
+var databaseSetup = new DatabaseSetup();
+databaseSetup.CreateTableComputer();
+databaseSetup.CreateTableLab();
 
 var connection = new SqliteConnection("Data Source = database.db");
-
 connection.Open();
 
 var command = connection.CreateCommand();
