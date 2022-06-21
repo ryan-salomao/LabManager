@@ -12,72 +12,54 @@ class ComputerRepository
     public ComputerRepository(DatabaseConfig databaseConfig) => _databaseConfig = databaseConfig;
     public IEnumerable<Computer> GetAll()
     {
-        var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
-        var computers = connection.Query<Computer>("SELECT * FROM Computers").ToList();
-
-        connection.Close();
-
-        return computers;
+        return connection.Query<Computer>("SELECT * FROM Computers").ToList();
     }
 
     public Computer Save(Computer computer)
     {
-        var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
         connection.Execute("INSERT INTO Computers VALUES(@Id, @Ram, @Processor)", computer);
-
-        connection.Close();
 
         return computer;
     }
 
     public Computer GetById(int id)
     {        
-        var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
-        var computer = connection.QueryFirstOrDefault<Computer>("SELECT * FROM Computers WHERE id = @Id;", new {Id = id});
-
-        connection.Close();
-
-        return computer;
+        return connection.QueryFirstOrDefault<Computer>("SELECT * FROM Computers WHERE id = @Id;", new {Id = id});
     }
 
     public Computer Update(Computer computer)
     {
-        var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
         connection.Execute("UPDATE Computers SET ram = @Ram, processor = @Processor WHERE id = @Id;", computer);
-
-        connection.Close();
 
         return computer;
     }
 
     public void Delete(int id)
     {
-        var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
         connection.Execute("DELETE FROM Computers WHERE id = @Id;", new {Id = id});
-
-        connection.Close();
     }
 
     public bool ExistsById(int id)
     {
-        var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
-        var result = Convert.ToBoolean(connection.ExecuteScalar("SELECT count(id) FROM Computers WHERE id = @Id;", new {Id = id}));
-
-        connection.Close();
-
-        return result;
+        return connection.ExecuteScalar<Boolean>("SELECT count(id) FROM Computers WHERE id = @Id;", new {Id = id});
 
     }
 
